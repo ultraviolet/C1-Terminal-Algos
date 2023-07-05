@@ -5,6 +5,7 @@ import warnings
 from sys import maxsize
 import json
 
+import ai_env
 
 """
 Most of the algo code you write will be in this file unless you create new
@@ -27,9 +28,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         gamelib.debug_write('Random seed: {}'.format(seed))
 
     def on_game_start(self, config):
-        """ 
-        Read in config and perform any initial setup here 
-        """
+
         gamelib.debug_write('Configuring your custom algo strategy...')
         self.config = config
         global WALL, SUPPORT, TURRET, SCOUT, DEMOLISHER, INTERCEPTOR, MP, SP
@@ -45,21 +44,15 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.scored_on_locations = []
 
     def on_turn(self, turn_state):
-        """
-        This function is called every turn with the game state wrapper as
-        an argument. The wrapper stores the state of the arena and has methods
-        for querying its state, allocating your current resources as planned
-        unit deployments, and transmitting your intended deployments to the
-        game engine.
-        """
+
+        gamelib.debug_write(ai_env.game_state_to_observation(turn_state))
+        
         game_state = gamelib.GameState(self.config, turn_state)
         gamelib.debug_write('Performing turn {} of your custom algo strategy'.format(game_state.turn_number))
         game_state.suppress_warnings(True)  #Comment or remove this line to enable warnings.
 
         self.strategy(game_state)
-
         game_state.submit_turn()
-
 
     """
     NOTE: All the methods after this point are part of the sample starter-algo
@@ -74,69 +67,48 @@ class AlgoStrategy(gamelib.AlgoCore):
         If there are no stationary units to attack in the front, we will send Scouts to try and score quickly.
         """
         # First, place basic defenses
-
         
-        self.build_primary_defence(game_state)
-        self.build_secondary_defence(game_state)
-        self.build_support(game_state)
+        self.build_front_line(game_state)
+        
 
-        # Now let's analyze the enemy base to see where their defenses are concentrated.
-        # If they have many units in the front we can build a line for our demolishers to attack them at long range.
-        if False: #self.detect_enemy_unit(game_state, unit_type=None, valid_x=None, valid_y=[14, 15]) > 10:
-            self.demolisher_line_strategy(game_state)
-        else:
-            # They don't have many units in the front so lets figure out their least defended area and send Scouts there.
 
-            # Only spawn Scouts in groups
-            if game_state.get_resource(1) > 10:
-                # To simplify we will just check sending them from back left and right
-                scout_spawn_location_options = [[14, 0]]
-                best_location = self.least_damage_spawn_location(game_state, scout_spawn_location_options)
-                game_state.attempt_spawn(SCOUT, best_location, 1000)
-
-    def build_primary_defence(self, game_state):
-        """
-        Build basic defenses using hardcoded locations.
-        Remember to defend corners and avoid placing units in the front where enemy demolishers can attack them.
-        """
-        # Useful tool for setting up your base locations: https://www.kevinbai.design/terminal-map-maker
-        # More community tools available at: https://terminal.c1games.com/rules#Download
-
-        # Place turrets that attack enemy units
+    def build_front_line(self, game_state):
         turret_locations = [[3, 12], [24, 12], [10, 11], [17, 11]]
-        # attempt_spawn will try to spawn units if we have resources, and will check if a blocking unit is already there
         game_state.attempt_spawn(TURRET, turret_locations)
-        # upgrade turrets so they are more powerful
         game_state.attempt_upgrade(turret_locations)
         
-        # Place walls in front of turrets to soak up damage for them
         wall_locations = [[2, 13], [3, 13], [4, 11], 
                           [23, 13], [24, 13], [25, 13],
                           [9, 12], [10, 12], [11, 12],
                           [16, 12], [17, 12], [18, 12]]
         game_state.attempt_spawn(WALL, wall_locations)
 
-    def build_secondary_defence(self, game_state):
         wall_locations = [[0, 13], [1, 13], [2, 13], [3, 13], [4, 13], [23, 13], [24, 13], [25, 13], [26, 13], [27, 13], [5, 12], [6, 12], [7, 12], [8, 12], [9, 12], [10, 12], [11, 12], [16, 12], [17, 12], [18, 12], [19, 12], [20, 12], [21, 12], [22, 12], [12, 11], [13, 11], [14, 11], [15, 11], [8, 10], [19, 10]]
         game_state.attempt_spawn(WALL, wall_locations)
 
-        # turret_locations = [[3, 12], [24, 12], [6, 11], [10, 11], [17, 11], [21, 11]]
-        # for i in range(0, len(turret_locations)-1):
-        #     if(game_state.get_resource(0) >= 6):
-        #         game_state.attempt_spawn(TURRET, turret_locations[i])
-        #         game_state.attempt_upgrade(turret_locations[i])
-        #     else:
-        #         break
 
-    def build_support(self, game_state):
+    def build_support(self, game_state, num):
         support_locations = [[12, 7], [13, 7], [14, 7], [15, 7], [12, 6], [13, 6], [14, 6], [15, 6]]
         
-        for i in range(0, len(support_locations)-1):
-            if(game_state.get_resource(0) >= 8):
-                game_state.attempt_spawn(SUPPORT, support_locations[i])
-                game_state.attempt_upgrade(support_locations[i])
-            else:
+        amount_placed = 0
+        for i in range(0, support_locations):
+            if game_state.can_spawn(SUPPORT, support_locations[i]):
+               if game_state.get_resource(0) >= 8:
+                    game_state.attempt_spawn(SUPPORT, support_locations[i])
+                    game_state.attempt_upgrade(support_locations[i])
+                    amount_placed +=1
+            if amount_placed == num:
                 break
+
+        if amount_placed == num:
+            return 0
+        else:
+            return -1
+    
+    def place_turrets(id):
+        
+        if not len(id) == 4:
+            return -100
 
     def stall_with_interceptors(self, game_state):
         """

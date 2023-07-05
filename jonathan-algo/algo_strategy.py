@@ -106,6 +106,51 @@ class AlgoStrategy(gamelib.AlgoCore):
                 support_locations = [[13, 2], [14, 2], [13, 3], [14, 3]]
                 game_state.attempt_spawn(SUPPORT, support_locations)
 
+    def build_primary_defence(self, game_state):
+        """
+        Build basic defenses using hardcoded locations.
+        Remember to defend corners and avoid placing units in the front where enemy demolishers can attack them.
+        """
+        # Useful tool for setting up your base locations: https://www.kevinbai.design/terminal-map-maker
+        # More community tools available at: https://terminal.c1games.com/rules#Download
+
+        # Place turrets that attack enemy units
+        turret_locations = [[3, 12], [24, 12], [10, 11], [17, 11]]
+        # attempt_spawn will try to spawn units if we have resources, and will check if a blocking unit is already there
+        game_state.attempt_spawn(TURRET, turret_locations)
+        # upgrade turrets so they are more powerful
+        game_state.attempt_upgrade(turret_locations)
+        
+        # Place walls in front of turrets to soak up damage for them
+        wall_locations = [[2, 13], [3, 13], [4, 11], 
+                          [23, 13], [24, 13], [25, 13],
+                          [9, 12], [10, 12], [11, 12],
+                          [16, 12], [17, 12], [18, 12]]
+        game_state.attempt_spawn(WALL, wall_locations)
+
+    def build_secondary_defence(self, game_state):
+        wall_locations = [[[0, 13], [1, 13], [2, 13], [3, 13], [4, 13], [23, 13], [24, 13], [25, 13], [26, 13], [27, 13], [5, 12], [6, 12], [7, 12], [8, 12], [9, 12], [10, 12], [11, 12], [16, 12], [17, 12], [18, 12], [19, 12], [20, 12], [21, 12], [22, 12], [12, 11], [13, 11], [14, 11], [15, 11]]]
+        game_state.attempt_spawn(WALL, wall_locations)
+
+        # turret_locations = [[3, 12], [24, 12], [6, 11], [10, 11], [17, 11], [21, 11]]
+        # for i in range(0, len(turret_locations)-1):
+        #     if(game_state.get_resource(0) >= 6):
+        #         game_state.attempt_spawn(TURRET, turret_locations[i])
+        #         game_state.attempt_upgrade(turret_locations[i])
+        #     else:
+        #         break
+
+    def build_support(self, game_state):
+        support_locations = [[12, 7], [13, 7], [14, 7], [15, 7], [12, 6], [13, 6], [14, 6], [15, 6]]
+        
+        for i in range(0, len(support_locations)-1):
+            if(game_state.get_resource(0) >= 8):
+                game_state.attempt_spawn(SUPPORT, support_locations[i])
+                game_state.attempt_upgrade(support_locations[i])
+            else:
+                break
+
+
     def build_defences(self, game_state):
         """
         Build basic defenses using hardcoded locations.
@@ -241,6 +286,51 @@ class AlgoStrategy(gamelib.AlgoCore):
     #FUNCTIONS BELOW
 
 
+    def def_frontline(self, game_state, l, r, override=False, upgrade=[0,1,2]):
+        wall_locations = [[0, 13], [1, 13], [2, 13], [3, 13], [4, 13], [23, 13], [24, 13], [25, 13], [26, 13], [27, 13], [5, 12], [6, 12], [7, 12], [8, 12], [9, 12], [10, 12], [11, 12], [16, 12], [17, 12], [18, 12], [19, 12], [20, 12], [21, 12], [22, 12], [12, 11], [13, 11], [14, 11], [15, 11], [2, 13], [3, 13], [4, 11], 
+                          [23, 13], [24, 13], [25, 13],
+                          [9, 12], [10, 12], [11, 12],
+                          [16, 12], [17, 12], [18, 12]]
+       
+
+        turret_locations = [[3, 12], [24, 12], [10, 11], [17, 11]]
+        
+
+        support_locations = [[12, 7], [13, 7], [14, 7], [15, 7], [12, 6], [13, 6], [14, 6], [15, 6]]
+
+        res = [self.util_clean_place(wall_locations), self.util_clean_place(turret_locations), self.util_clean_place(support_locations)]
+        
+        if override:
+            for i in res:
+                if i == 1 or i == 2:
+                    return i
+        
+
+        for e in wall_locations:
+            if not (i[0] >= l and i[0] <= r):
+                    wall_locations.remove(e)
+        
+        for e in turret_locations:
+            if not (i[0] >= l and i[0] <= r):
+                    turret_locations.remove(e)
+        
+        for e in turret_locations:
+            if not (i[0] >= l and i[0] <= r):
+                turret_locations.remove(e)
+
+        for i in range(0, len(support_locations)-1):
+            if(game_state.get_resource(0) >= 8):
+                game_state.attempt_spawn(SUPPORT, support_locations[i])
+                game_state.attempt_upgrade(support_locations[i])
+            else:
+                break
+        
+
+        
+
+
+
+        
 
     """
     self
@@ -278,6 +368,26 @@ class AlgoStrategy(gamelib.AlgoCore):
         return 0
         
     
+    def util_handle_placing(self, game_state, arr, override, upgrade):
+
+        res = [self.util_clean_place(arr[0], override), self.util_clean_place(arr[1], override), self.util_clean_place(arr[2], override)]
+        cor = [WALL, TURRET, SUPPORT]
+        
+        for e in res:
+            if e == 1:
+                return e
+        
+        if not override:
+            for i in range(len(res)):
+                if upgrade[i] == 0:
+                    game_state.attempt_spawn(cor[i], res[i])
+                elif upgrade[i] == 1:
+                    game_state.attempt_spawn(cor[i], res[i])
+                    game_state.attempt_upgrade(res[i])
+                else:
+                    for e in game_state[]
+        
+
     """
     self
     arr = array of locations
@@ -311,13 +421,13 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     return = [True if you can place the amount of buildings, False i.o]
     """
-    def util_can_place(self, str, amount):
+    def util_can_place(self, str, amount, upgrade=False):
         if str == 'WALL':
-            return int(self.state["p1Stats"][1]) < amount
+            return int(self.state["p1Stats"][1]) < (amount + int(upgrade)) 
         elif str == 'SUPPORT':
-            return int(self.state["p1Stats"][1]) < amount/4
+            return int(self.state["p1Stats"][1]) < (amount + 4*int(upgrade))/4
         elif str == 'TURRENT':
-            return int(self.state["p1Stats"][1]) < amount/2
+            return int(self.state["p1Stats"][1]) < (amount+4*int(upgrade))/2
 
     """
     self
@@ -333,21 +443,6 @@ class AlgoStrategy(gamelib.AlgoCore):
         return False
 
     
-    """
-    self
-    x = xpos
-    y = ypos
-    
-    return [True if (x, y) is in bounds of all area, False if (x, y) is out of bounds of all area]
-    """
-    def util_bounds_all(self, x, y):
-        pass
-
-    def util_bounds_theirs(self, x, y):
-        if util_bounds_all(self, x, y) and (not util_bounds_ours(self, x, y)):
-            return True
-        else:
-            return False  
 
         
 
