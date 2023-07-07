@@ -1,0 +1,22 @@
+0 -> 419 identity of tower:
+
+0 : nothing
+1 : wall
+2 : support 
+3 : turret 
+4 : upgraded wall 
+5 : upgraded support 
+6 : upgraded turret 
+
+420 -> 839 health of tower 
+------------------------------------
+840 -> p1 Health 
+841 -> p1 SP 
+842 -> p1 MP 
+843 -> p2 Health 
+844 -> p2 SP 
+845 -> p2 MP 
+------------------------------------
+846 -> 898 breaches 
+
+action

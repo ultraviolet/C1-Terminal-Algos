@@ -32,27 +32,50 @@ class AlgoStrategy(gamelib.AlgoCore):
         gamelib.debug_write('Configuring your custom algo strategy...')
         self.config = config
         global WALL, SUPPORT, TURRET, SCOUT, DEMOLISHER, INTERCEPTOR, MP, SP
-        WALL = config["unitInformation"][0]["shorthand"]
-        SUPPORT = config["unitInformation"][1]["shorthand"]
-        TURRET = config["unitInformation"][2]["shorthand"]
-        SCOUT = config["unitInformation"][3]["shorthand"]
-        DEMOLISHER = config["unitInformation"][4]["shorthand"]
-        INTERCEPTOR = config["unitInformation"][5]["shorthand"]
+        WALL = config["unitInformation"][0]["shorthand"] # FF
+        SUPPORT = config["unitInformation"][1]["shorthand"] # EF
+        TURRET = config["unitInformation"][2]["shorthand"] # DF
+        SCOUT = config["unitInformation"][3]["shorthand"]  # PI
+        DEMOLISHER = config["unitInformation"][4]["shorthand"] # EI
+        INTERCEPTOR = config["unitInformation"][5]["shorthand"] # SI
+        # RM -> MARKED TO REMOVE
+        # UP -> MARKED TO UPGRADE
+
+        # gamelib.debug_write(config)
+        for i in config["unitInformation"]:
+            gamelib.debug_write(i["shorthand"])
+
         MP = 1
         SP = 0
         # This is a good place to do initial setup
         self.scored_on_locations = []
 
-    def on_turn(self, turn_state):
 
-        gamelib.debug_write(ai_env.game_state_to_observation(turn_state))
+        """
+        1. Create the environment
+        """
+
+    def on_turn(self, turn_state):
+        #wait for ai_env to say the action
+
+        """
+        while action == null:
+            time.sleep(0.1)
         
+        parse action
+        actions[action]()
+
+        game_state.submit_turn()
+        """
+
         game_state = gamelib.GameState(self.config, turn_state)
+        gamelib.debug_write(ai_env.game_state_to_observation(turn_state,game_state))
         gamelib.debug_write('Performing turn {} of your custom algo strategy'.format(game_state.turn_number))
         game_state.suppress_warnings(True)  #Comment or remove this line to enable warnings.
 
         self.strategy(game_state)
         game_state.submit_turn()
+
 
     """
     NOTE: All the methods after this point are part of the sample starter-algo
@@ -69,6 +92,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         # First, place basic defenses
         
         self.build_front_line(game_state)
+
+        game_state.submit_turn()
         
 
 

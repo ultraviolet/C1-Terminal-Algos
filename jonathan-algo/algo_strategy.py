@@ -385,7 +385,7 @@ class AlgoStrategy(gamelib.AlgoCore):
                     game_state.attempt_spawn(cor[i], res[i])
                     game_state.attempt_upgrade(res[i])
                 else:
-                    for e in game_state[]
+                    pass
         
 
     """
