@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 #include <entity.h>
 
-class Structure : Entity {
+class Structure : public Entity {
 
     protected:
         int upgradeCost;
@@ -19,4 +19,5 @@ class Structure : Entity {
         int getUpgradeCost();
         bool getUpgraded();
 
-}
+
+};

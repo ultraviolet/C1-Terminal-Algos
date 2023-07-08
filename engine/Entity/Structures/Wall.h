@@ -2,12 +2,11 @@
 #include <bits/stdc++.h>
 #include <structure.h>
 
-class Wall : Structure {
+class Wall : public Structure {
 
     public:
         Wall(Player* p, std::pair<int, int> loc);
 
-        void damage(float f);
-
-
+        void handle();
+        
 };

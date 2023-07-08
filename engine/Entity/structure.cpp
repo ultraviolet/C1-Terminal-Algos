@@ -1,19 +1,24 @@
 #include <bits/stdc++.h>
 #include <structure.h>
 
-Structure::Structure(Player* p, int type, int health, int cost, int upgradeCost, std::pair<int, int> loc) : Entity(p, type, health, cost, loc) {
+Structure::Structure(Player* p, TYPE type, int health, int cost, int upgradeCost, std::pair<int, int> loc) : Entity(p, type, health, cost, loc) {
     this->upgradeCost = upgradeCost;
+    this->upgraded = false;
 }
 
-Structure::Structure(Player* p, int type, int health, int cost, int upgradeCost, bool upgraded, std::pair<int, int> loc) : Entity(p, type, health, cost, loc) {
+Structure::Structure(Player* p, TYPE type, int health, int cost, int upgradeCost, bool upgraded, std::pair<int, int> loc) : Entity(p, type, health, cost, loc) {
     this->upgradeCost =  upgradeCost;
     this->upgraded = upgraded;
 }
 
 int Structure::upgrade() {
+
+    if(this->getUpgraded()) return -1;
+
     int sp = this->player->getStructurePoints();
     if(sp >= this->getUpgradeCost()) {
         this->player->setStructurePoints(sp - this->getUpgradeCost());
+        this->upgraded = true;
         this->handle();
         return 0;
     }
@@ -25,9 +30,5 @@ void Structure::remove() {
     float refund = 75 * this->getCost() * (this->getHealth() / this->getMaxHealth());
     refund = std::floor(10 * refund + 0.5f) / 10;
 
-    delete this;
-}
-
-virtual void Structure::handle() {
-    std::cout << "YOU FORGOT TO INHERIT HANDLE() IN A CLASS!!!!!" << "\n";
+    this->player->getBoard()->getFrameDeceased().push_back(this);
 }
