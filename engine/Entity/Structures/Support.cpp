@@ -2,7 +2,7 @@
 #include <Support.h>
 #include <Player.h>
 
-Support::Support(Player* p, std::pair<int, int> loc) : Structure(p, SUPPORT, 30, 4, 4, loc) {};
+Support::Support(Player* p, std::pair<int, int> loc) : Structure(EntityData(p, SUPPORT, loc, 30, 4), 4) {};
 
 void Support::heal() {
     int range = this->getUpgraded() ? 7 : 3.5;
@@ -16,7 +16,7 @@ void Support::heal() {
 
     std::vector<Entity*> vec = this->getInRange(range);
     for(Entity* e : vec) { //CHECK
-        if(e->getPlayer()->number == this->player->number && e->isMobile() && this->getSet().find(e) == this->getSet().end()) {
+        if(Util::sameSide(this, e) && e->isMobile() && this->getSet().find(e) == this->getSet().end()) {
             this->getSet().insert(e);
             e->addHealth(healAmount);
         }

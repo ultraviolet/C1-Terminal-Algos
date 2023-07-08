@@ -9,8 +9,7 @@ class Structure : public Entity {
         bool upgraded;
 
     public:
-        Structure(Player* p, int type, int health, int cost, int upgradeCost, std::pair<int, int> loc);
-        Structure(Player* p, int type, int health, int cost, int upgradeCost, bool upgraded, std::pair<int, int> loc);
+        Structure(EntityData entityData, int upgradeCost);
 
         int upgrade();
         virtual void handle();
@@ -18,6 +17,4 @@ class Structure : public Entity {
         
         int getUpgradeCost();
         bool getUpgraded();
-
-
 };

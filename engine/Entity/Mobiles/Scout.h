@@ -5,4 +5,4 @@ class Scout : public Mobile {
     public:
         Scout(Player* p, std::pair<int, int> location);
         
-}
+};

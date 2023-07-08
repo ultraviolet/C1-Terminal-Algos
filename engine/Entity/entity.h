@@ -5,6 +5,20 @@
 
 enum TYPE { WALL, SUPPORT, TURRET, SCOUT, DEMOLISHER, INTERCEPTOR };
 
+struct entityData{
+    Player* player;
+    TYPE type;
+    Coordinate location;
+    float maxHealth;
+    int cost;
+
+    entityData(Player* p, TYPE type, Coordinate loc, float maxHealth, int cost) 
+        : player(p), type(type), location(loc), maxHealth(maxHealth), cost(cost){
+        
+    }
+};
+typedef struct entityData EntityData;
+
 class Entity {
 
     protected:
@@ -19,13 +33,9 @@ class Entity {
         Player* player;
 
     public:
+        Entity(EntityData entityData);
 
-        
-
-        Entity(Player* p, TYPE type, float health, int cost, std::pair<int, int> loc);
-
-        float damage(float by);
-        int upgrade();                
+        float takeDamage(float by);
 
         std::pair<int, int> getLocation();
         float getHealth();
@@ -42,11 +52,6 @@ class Entity {
 
         Player* getPlayer();
 
-
-
-
         Entity* getTheoreticalTarget(std::vector<Entity*> possible);
         std::vector<Entity*> getInRange(float radius);
-
-
 };

@@ -9,5 +9,4 @@ class Turret : public Structure {
 
         void attack();
         void handle();
-
 };

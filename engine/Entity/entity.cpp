@@ -2,14 +2,13 @@
 #include <entity.h>
 #include <Player.h>
 
-
-Entity::Entity(Player* p, TYPE type, float health, int cost, std::pair<int, int> loc) {
-    this->type = type;
-    this->health = health;
-    this->cost = cost;
-    this->player = p;
-    this->loc = loc;
-    this->maxHealth = health;
+Entity::Entity(EntityData entityData) {
+    this->type = entityData.type;
+    this->maxHealth = entityData.maxHealth;
+    this->health = entityData.maxHealth;
+    this->cost = entityData.cost;
+    this->player = entityData.player;
+    this->loc = entityData.location;
 }
 
 std::vector<Entity*> Entity::getInRange(float radius) {
@@ -108,8 +107,8 @@ bool Entity::isMobile() {
     return false;
 }
 
-float Entity::damage(float by) {
-    this->health -= by;
+float Entity::takeDamage(float damage) {
+    this->health -= damage;
 
     if(this->health <= 0) {
         delete this;

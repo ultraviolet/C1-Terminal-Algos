@@ -2,7 +2,7 @@
 #include <mobile.h>
 #include <pathfinding.h>
 
-Mobile::Mobile(Player* p, TYPE type, int health, int cost, std::pair<int, int> loc, int speed, int range, int damageAmount) : Entity(p, type, health, cost, loc) {
+Mobile::Mobile(EntityData entityData, int speed, float range, int damageAmount) : Entity(entityData) {
     assert(Board::onEdge(loc) != BoardEdge::NONE);
     
     if(Board::onEdge(loc) == BoardEdge::TOPLEFT){
@@ -36,20 +36,20 @@ void Mobile::move() {
     }
 }
 
-void Mobile::damage() {
-
+void Mobile::attack() {
     std::vector<Entity*> vec = this->getInRange(this->range);
     Entity* e = this->getTheoreticalTarget(vec);
 
-    e->damage(this->damageAmount);
-
+    e->takeDamage(this->damageAmount);
 }
 
 void Mobile::selfDestruct(){
+    int selfDestructDamage = this->getMaxHealth();
+
     if(this->counter >= 5*speed){
         vector<Entity*> entities = this->getInRange(1.5);
         for(Entity* e : entities){
-            if(Util::sameSide(e, this)) e->damage(this->getMaxHealth());
+            if(Util::sameSide(e, this)) e->takeDamage(selfDestructDamage);
         }
     }
 

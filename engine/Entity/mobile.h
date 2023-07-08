@@ -5,18 +5,18 @@
 class Mobile : public Entity {
 
     private:
-        int speed, range;
-        float damageAmount, counter;
+        int speed, counter;
+        float damageAmount, range;
 
     public:
-        Mobile(Player* p, TYPE type, int health, int cost, std::pair<int, int> loc, int speed, float range, float damageAmount);
+        Mobile(EntityData entityData, int speed, float range, int damageAmount);
         BoardEdge targetEdge;
         bool previousDirectionWasHorizontal;
 
         int getSpeed();
 
         void move();
-        void damage();
+        void attack();
 
         void selfDestruct();
 };

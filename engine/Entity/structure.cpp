@@ -1,14 +1,9 @@
 #include <bits/stdc++.h>
 #include <structure.h>
 
-Structure::Structure(Player* p, TYPE type, int health, int cost, int upgradeCost, std::pair<int, int> loc) : Entity(p, type, health, cost, loc) {
+Structure::Structure(EntityData entityData, int upgradeCost) : Entity(entityData) {
     this->upgradeCost = upgradeCost;
     this->upgraded = false;
-}
-
-Structure::Structure(Player* p, TYPE type, int health, int cost, int upgradeCost, bool upgraded, std::pair<int, int> loc) : Entity(p, type, health, cost, loc) {
-    this->upgradeCost =  upgradeCost;
-    this->upgraded = upgraded;
 }
 
 int Structure::upgrade() {
