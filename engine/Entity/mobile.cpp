@@ -49,12 +49,12 @@ void Mobile::selfDestruct(){
     if(this->counter >= 5*speed){
         vector<Entity*> entities = this->getInRange(1.5);
         for(Entity* e : entities){
-            if(Util::sameSide(e, this)) e->takeDamage(selfDestructDamage);
+            if(!Util::sameSide(e, this)) e->takeDamage(selfDestructDamage);
         }
     }
 
     this->health = 0;
-    this->getBoard()->remove(this->getLocation(), this);
+    this->handleDeath();
 }
 
 int Mobile::getSpeed() {

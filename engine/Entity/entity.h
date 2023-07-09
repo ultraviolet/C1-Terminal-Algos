@@ -36,6 +36,7 @@ class Entity {
         Entity(EntityData entityData);
 
         float takeDamage(float by);
+        void handleDeath();
 
         std::pair<int, int> getLocation();
         float getHealth();

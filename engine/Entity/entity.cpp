@@ -84,6 +84,9 @@ Entity* Entity::getTheoreticalTarget(std::vector<Entity*> possible) {
         if(this->getType() == INTERCEPTOR && !e->isMobile()) {
             continue;
         }
+        if(e->getHealth() <= 0) {
+            continue;
+        }
 
         if(!Util::sameSide(this, e)) {
             return e;
@@ -111,10 +114,14 @@ float Entity::takeDamage(float damage) {
     this->health -= damage;
 
     if(this->health <= 0) {
-        delete this;
+        handleDeath();
     }
 
     return this->health;
+}
+
+void Entity::handleDeath() {
+    this->getBoard()->getFrameDeceased().push_back(this);
 }
 
 
